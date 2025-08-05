@@ -20,6 +20,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/whatwg-url": "^13.0.0",
+    "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
     "eslint": "^9.19.0",
     "favicons": "^7.2.0",
@@ -46,6 +47,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "rxjs": "^7.8.1",
+    "vscode-icons-js": "^11.6.1",
     "whatwg-url": "^14.1.0"
   }
 }

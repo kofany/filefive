@@ -341,14 +341,14 @@ export default function Explorer ({
         return () => onBlur()
     }, [])
 
-    const focused = useFocus(rootRef)
+    const { isFocused } = useFocus()
 
     useEffect(() => {
-        focused ? onFocus?.() : onBlur?.()
-    }, [focused])
+        isFocused() ? onFocus?.() : onBlur?.()
+    }, [])
 
-    useSubscribe(() => 
-        command$.pipe(filter(() => focused)).subscribe(cmd => {
+    useSubscribe(() =>
+        command$.pipe(filter(() => isFocused())).subscribe(cmd => {
             switch (cmd.id) {
                 case CommandID.Refresh: {
                     if (connection) {
@@ -465,8 +465,8 @@ export default function Explorer ({
                     break
                 }
             }
-        }), 
-        [focused]
+        }),
+        [isFocused]
     )
 
     const watch = (dirs: string[]) => {
@@ -617,7 +617,7 @@ export default function Explorer ({
     }, [files, selected.current])
 
     return <div ref={rootRef}
-            className={classNames(styles.root, {focused})} 
+            className={classNames(styles.root, {focused: isFocused()})}
             tabIndex={tabindex}
         >
         <header>

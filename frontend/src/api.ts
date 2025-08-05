@@ -65,6 +65,8 @@ window.f5 = {
     onError: listener => subscribe<any>('error', (error) => listener(error)),
 
     connect: (file, signal) => invoke<{ id: ConnectionID, sid: string, settings: ConnectionSettings }>('connect', { file }, signal),
+    connectDirect: ({ config, password, privateKey }: { config: any, password?: string, privateKey?: string }) =>
+        invoke<{ id: ConnectionID, sid: string, settings: ConnectionSettings }>('connectDirect', { config, password, privateKey }),
     login: (id: ConnectionID, password: string|false, remember: boolean) => invoke<void>('login', { id, password, remember }),
     disconnect: (id: ConnectionID, sid: string) => invoke<void>('disconnect', { id, sid }),
 

@@ -1,16 +1,17 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { mkdir } from 'node:fs/promises'
-import { 
-    Path, 
-    ConnectionID, 
-    URI, 
-    Files, 
-    Failure, 
-    FailureType, 
-    QueueEvent, 
-    QueueAction, 
-    LocalFileSystemID, 
+import {
+    Path,
+    ConnectionID,
+    ConnectionConfig,
+    URI,
+    Files,
+    Failure,
+    FailureType,
+    QueueEvent,
+    QueueAction,
+    LocalFileSystemID,
     AppSettings,
     DeepPartial,
     FilterSettings
@@ -52,6 +53,8 @@ export default class App {
             saveapp:      ({settings}: {settings: DeepPartial<AppSettings>}) => commands.saveSettings(settingsPath, settings),
 
             connect:      ({file}: {file: Path}) => commands.connect(file, (id, {message}) => this.onError({ type: FailureType.RemoteError, id, message })),
+            connectDirect: ({config, password, privateKey}: {config: ConnectionConfig, password?: string, privateKey?: string}) =>
+                commands.connectDirect(config, password || '', privateKey || '', (id, {message}) => this.onError({ type: FailureType.RemoteError, id, message })),
             login:        ({id, password, remember}: {id: ConnectionID, password: string|false, remember: boolean}) => Password.set(id, password, remember, false),
             disconnect:   ({id, sid}: {id: ConnectionID, sid: string}) => commands.disconnect(id, sid),
 

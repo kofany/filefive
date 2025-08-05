@@ -11,7 +11,7 @@ import { CommandID } from '../../commands'
 import { command$ } from '../../observables/command'
 import EditFileName from '../EditFileName/EditFileName'
 import debounce from '../../utils/debounce'
-import { Tooltips } from '../../ui/components'
+import { Tooltips, FileIcon } from '../../ui/components'
 
 
 export enum ColumnType {
@@ -519,9 +519,15 @@ export default forwardRef<HTMLDivElement, ListProps>(function List ({
                                                     data-f5-attributes={Object.entries(item[FileAttrsAttr] ?? {}).map(([id]) => id).join(' ')}
                                                 >
                                                     <div className={classNames({expanded: expanded.includes(item.path)})}>
-                                                        {item.dir && 
+                                                        {item.dir &&
                                                             <i className="icon">arrow_forward_ios</i>
                                                         }
+                                                        <FileIcon
+                                                            fileName={item.name}
+                                                            isDirectory={item.dir}
+                                                            isOpen={expanded.includes(item.path)}
+                                                            size={16}
+                                                        />
                                                         <span data-tooltip={item.path}>{item[name]}</span>
                                                         <ul>
                                                             {item.target &&

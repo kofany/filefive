@@ -68,7 +68,7 @@ export default function AskForPassword() {
                     <div className="username">
                         <input type='text' name="username" value={connectionId} autoComplete="username" readOnly />
                     </div>
-                    <p>Password: <Password ref={input} onChange={setPassword} name='password' autoComplete='current-password' /></p>
+                    <p>Password: <Password ref={input} value={password} onChange={setPassword} name='password' autoComplete='current-password' /></p>
                     <p>
                         <Checkbox onChange={remember => setRemember(remember)} value={remember}>Remember password for this session</Checkbox>
                     </p>

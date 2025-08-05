@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Tooltips, getTooltipShortcut } from '../../ui/components/Tooltips/Tooltips'
+import { Tooltips, getTooltipShortcut } from '../../ui/components'
 import styles from './Toolbar.less'
 import { AppSettingsContext } from '../../context/config'
 

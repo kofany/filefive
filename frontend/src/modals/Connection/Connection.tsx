@@ -97,7 +97,7 @@ export default function ({ file, onConnect, onClose }: { file?: Path, onConnect:
             label: 'Cancel'
         },
         {
-            id: 'save',
+            id: ModalButtonID.Save,
             label: 'Save',
             disabled: !isValid
         },
@@ -109,7 +109,7 @@ export default function ({ file, onConnect, onClose }: { file?: Path, onConnect:
     ]
 
     const onModalClose = async (id: string) => {
-        if (id == 'save' || id == ModalButtonID.Ok) {
+        if (id == ModalButtonID.Save || id == ModalButtonID.Ok) {
             const data = evolve({
                 host: trim,
                 port: parseInt,

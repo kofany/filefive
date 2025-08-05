@@ -4,7 +4,7 @@ import styles from './App.less'
 import { useMap, useSubscribe, useShortcuts, useMode, useCopyPaste, useEffectOnUpdate } from '../../hooks'
 import { queue$ } from '../../observables/queue'
 import Queue from '../Queue/Queue'
-import { LocalFileSystemID, QueueEventType, QueueType, ConnectionID, AppSettings, Path } from '../../../../src/types'
+import { LocalFileSystemID, QueueEventType, QueueType, ConnectionID, ConnectionSettings, AppSettings, Path, Failure, FailureType, URI } from '../../../../src/types'
 import { parse } from '../../utils/path'
 import { createURI } from '../../../../src/utils/URI'
 import classNames from "classnames"
@@ -31,20 +31,109 @@ function setTitle(connectionId: ConnectionID|null, connectionName: string, local
 
 export default function App () {
     const [appSettings, setAppSettings] = useState<AppSettings>(null)
+    const [connections, setConnections] = useMap<ConnectionID, ConnectionSettings>()
+    const [error, setError] = useState<Failure>(null)
+    const [askForPassword, setAskForPassword] = useState<ConnectionID>(null)
+    const [confirmDeletion, setConfirmDeletion] = useState<URI[]>(null)
+    const [confirmClearance, setConfirmClearance] = useState<QueueType>(null)
+    const [showSettings, setShowSettings] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const currAppSettings = useRef<AppSettings>(null)
 
     const settingsFile = useRef('')
     const [settingsChanges, setSettingsChanges] = useState<AppSettingsChanges>({})
     const allSettingsChanges = useRef<AppSettingsChanges>({})
-   
-    useEffect(() => { 
+    const [autoConnectPending, setAutoConnectPending] = useState<any>(null)
+
+    useEffect(() => {
         window.f5.settings().then(settings => {
             currAppSettings.current = settings
             setAppSettings(settings)
             settingsFile.current = settings.settings
-        }) 
+
+            // Check for autoconnect URL parameters
+            checkAutoConnect()
+        })
     }, [])
+
+    // Auto-connect functionality
+    const checkAutoConnect = () => {
+        const urlParams = new URLSearchParams(window.location.search)
+        const autoconnect = urlParams.get('autoconnect')
+
+        if (autoconnect === 'true') {
+            const config = {
+                scheme: urlParams.get('scheme') || 'sftp',
+                host: urlParams.get('host'),
+                port: parseInt(urlParams.get('port') || '22'),
+                user: urlParams.get('user'),
+                privatekey: '',
+                theme: urlParams.get('theme') || 'black',
+                local: {
+                    columns: [
+                        { name: 'name', width: 300 },
+                        { name: 'size', width: 300 },
+                        { name: 'modified', width: 300 }
+                    ],
+                    sort: ['name', 'asc'] as [string, string],
+                    history: [] as string[],
+                    filter: null as string | null
+                },
+                remote: {
+                    columns: [
+                        { name: 'name', width: 300 },
+                        { name: 'size', width: 300 },
+                        { name: 'modified', width: 300 },
+                        { name: 'rights', width: 300 }
+                    ],
+                    sort: ['name', 'asc'] as [string, string],
+                    history: [] as string[],
+                    filter: null as string | null
+                },
+                path: {
+                    local: urlParams.get('localPath') || undefined,
+                    remote: urlParams.get('remotePath') || undefined
+                },
+                sync: null as any
+            }
+
+            if (config.host && config.user) {
+                setAutoConnectPending(config)
+
+                // Listen for credentials from parent window
+                const handleMessage = (event: MessageEvent) => {
+                    if (event.data.type === 'filefive-credentials') {
+                        window.removeEventListener('message', handleMessage)
+                        performAutoConnect(config, event.data.password, event.data.privateKey)
+                    }
+                }
+                window.addEventListener('message', handleMessage)
+
+                // Request credentials from parent
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'filefive-ready', config }, '*')
+                }
+            }
+        }
+    }
+
+    const performAutoConnect = async (config: any, password: string = '', privateKey: string = '') => {
+        try {
+            setLoading(true)
+            const result = await window.f5.connectDirect({ config, password, privateKey })
+            if (result) {
+                // Connection successful - the UI will update automatically
+                console.log('Auto-connect successful:', result)
+            }
+        } catch (error) {
+            console.error('Auto-connect failed:', error)
+            setError({ type: FailureType.RemoteError, id: 'auto-connect' as ConnectionID, message: `Auto-connect failed: ${error.message}` })
+        } finally {
+            setLoading(false)
+            setAutoConnectPending(null)
+        }
+    }
 
     useEffect(() => {
         if (appSettings) {
@@ -52,11 +141,11 @@ export default function App () {
         }
     }, [appSettings])
 
-    const defaultMode = useMode()
+    const [defaultMode] = useMode()
     useLayoutEffect(() => {
         if (appSettings) {
-            document.documentElement.setAttribute('data-mode', appSettings.mode == 'system' ? defaultMode : appSettings.mode)            
-            document.documentElement.setAttribute('data-theme', appSettings.theme)            
+            document.documentElement.setAttribute('data-mode', appSettings.mode == 'system' ? defaultMode : appSettings.mode)
+            document.documentElement.setAttribute('data-theme', appSettings.theme)
         }
     }, [appSettings, defaultMode])
 

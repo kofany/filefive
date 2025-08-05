@@ -1,4 +1,5 @@
 import connect from './connect'
+import connectDirect from './connectDirect'
 import disconnect from './disconnect'
 import watch from './watch'
 import unwatch from './unwatch'
@@ -21,6 +22,7 @@ import checkVer  from './checkVer'
 
 export const commands = {
     connect,
+    connectDirect,
     disconnect,
     getSettings,
     watch,
