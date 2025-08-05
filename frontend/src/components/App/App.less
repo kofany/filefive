@@ -5,21 +5,22 @@
     height: 100vh;
     overflow: hidden;
     &.hasQueues {
-        padding-bottom: 2em;
+        padding-bottom: 6em;
     }
     > .queues {
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
-        height: 4em;
-        padding: 0.3em 0.6em;
+        height: 6em;
+        padding: 1em 1em;
         background-color: var(--bar-background);
         color: var(--bar-color);
         text-overflow: ellipsis;
         display: flex;
-        gap: 0.6em;
+        gap: 1em;
         align-items: center;
+        border-top: 2px solid var(--border-color);
         > div {
             flex: 2em 0 1;
             &.active {

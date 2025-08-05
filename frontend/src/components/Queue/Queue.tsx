@@ -51,11 +51,11 @@ export default function ({id, type, connection, active}: {id: string, type: Queu
             <>
                 <span dangerouslySetInnerHTML={{__html: msg}}></span>
                 <div className={styles.progress}>
-                    <Progress percent={Math.round(done/total*100)} />
+                    <Progress percent={Math.round(done/total*100)} showText={true} />
                     <Tooltips>
                         <span className="icon" onClick={() => window.f5.stop(id)} data-tooltip="Stop">stop_circle</span>
                     </Tooltips>
-                </div>        
+                </div>
             </> :
             <CircleProgress percent={Math.round(done/total*100)}>
                 <i className='icon'>{captions[type].icon}</i>
