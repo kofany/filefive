@@ -29,10 +29,17 @@ options.log = inputOptions.log ?? process.env.NODE_ENV == 'development'
 
 const app = express()
 
+app.use(function (req, res, next) {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next()
+})
+
 app.use(express.json())
 app.use(express.static(resolve(__dirname, 'public')))
 
 app.use(express.static(resolve(__dirname, '../dist/public')))
+
 
 const server = app.listen(port, async () => {
     console.log(`FileFive is up on http://localhost:${port}`)

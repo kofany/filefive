@@ -21,6 +21,10 @@ const config = {
   devServer: {
     static: './dist/public',
     port: 1331,
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    },
     proxy: [
       {
         context: ['/api'],
